@@ -5,7 +5,7 @@ import { navigate } from '../router';
 import { actions, useProgress } from '../store/useProgress';
 import { TopBar } from '../components/TopBar';
 import { AvatarView } from '../components/AvatarView';
-import { AvatarPick } from './AvatarPick';
+import { AddressChoice, AvatarPick } from './AvatarPick';
 
 export function Profile() {
   const p = useProgress();
@@ -58,6 +58,8 @@ export function Profile() {
             );
           })}
         </div>
+
+        <AddressChoice value={p.addressAs} onChange={actions.setAddressAs} />
 
         <div className="profile-actions">
           <button className="btn btn-secondary" onClick={() => setPicking(true)}><Tx t={(d) => d.profile.changeAvatar} /></button>

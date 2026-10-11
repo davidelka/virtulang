@@ -20,7 +20,7 @@ const toTurns = (msgs: Msg[]): TutorTurn[] =>
  * Uses the AI server when it's reachable, otherwise the local keyword replies.
  */
 export function BotFab() {
-  const { voice, level } = useProgress();
+  const { voice, level, addressAs } = useProgress();
   const [open, setOpen] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [input, setInput] = useState('');
@@ -51,7 +51,7 @@ export function BotFab() {
 
   async function respond(history: Msg[]) {
     setThinking(true);
-    const ai = await askTutor(level, toTurns(history));
+    const ai = await askTutor(level, toTurns(history), addressAs);
     let msg: Msg;
     if (ai) {
       msg = { from: 'bot', text: { he: ai.he, ar: ai.ar }, correction: ai.correction };

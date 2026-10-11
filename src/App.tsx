@@ -33,7 +33,7 @@ export default function App() {
 
   let screen;
   if (!loggedIn) screen = <Login />;
-  else if (!progress.avatarId) screen = <AvatarPick />;
+  else if (!progress.avatarId || !progress.addressAs) screen = <AvatarPick />;
   else screen = <StudentRoutes {...loc} />;
 
   return (

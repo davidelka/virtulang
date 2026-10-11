@@ -6,6 +6,8 @@ export const MAX_HISTORY = 20;
 export const MAX_TEXT = 500;
 
 export const Level = z.enum(['A1', 'A2', 'B1', 'B2']);
+/** How to address the student in Hebrew, as they chose in the app. Absent = unknown (use the plural). */
+export const AddressAs = z.enum(['male', 'female']).optional();
 
 export const ChatMessage = z.object({
   role: z.enum(['student', 'tutor']),
@@ -15,6 +17,7 @@ export const ChatMessage = z.object({
 export const TutorRequest = z
   .object({
     level: Level,
+    addressAs: AddressAs,
     // Empty = start the conversation (the tutor greets and asks a question).
     // Longer histories are accepted and trimmed to the last MAX_HISTORY messages.
     messages: z.array(ChatMessage).max(100),
@@ -74,6 +77,7 @@ export const RoleplayRequest = z
   .object({
     activityId: z.string().min(1).max(100),
     level: Level,
+    addressAs: AddressAs,
     /** Goal ids the student has already covered (the client keeps score). */
     met: z.array(z.string().max(100)).max(30),
     messages: z.array(ChatMessage).max(60),

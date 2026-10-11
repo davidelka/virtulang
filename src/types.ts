@@ -130,6 +130,8 @@ export interface Progress {
   name: string;
   classCode: string;
   avatarId: string | null;
+  /** How Hebrew addresses the student (אתה / את). Chosen by the student, never guessed. */
+  addressAs: VoiceGender | null;
   level: CEFR;
   points: number;
   stars: Record<string, number>;

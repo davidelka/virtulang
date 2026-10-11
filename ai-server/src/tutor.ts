@@ -30,7 +30,7 @@ export async function tutorReply(input: TutorRequest): Promise<TutorReply> {
     // The level goes on the first turn so the earlier prefix stays identical across turns (cache-friendly).
     turns: req.messages.map((m, i) => ({
       role: m.role === 'student' ? 'user' : 'assistant',
-      text: i === 0 ? `${levelNote(req.level)}\n${m.text}` : m.text,
+      text: i === 0 ? `${levelNote(req.level, req.addressAs)}\n${m.text}` : m.text,
     })),
     schema: ModelReply,
     jsonSchema: REPLY_JSON_SCHEMA,

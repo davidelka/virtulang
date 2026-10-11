@@ -28,6 +28,9 @@ export const he: typeof ar = {
     title: 'בחרו דמות',
     subtitle: 'הדמות תלווה אתכם במסע במדבר',
     confirm: 'יוצאים לדרך!',
+    addressTitle: 'איך לפנות אליכם בעברית?',
+    address: { male: 'בלשון זכר (אתה)', female: 'בלשון נקבה (את)' },
+    addressHint: 'בעברית יש לשון זכר ולשון נקבה. אפשר לשנות בפרופיל.',
   },
 
   topbar: {

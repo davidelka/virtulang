@@ -46,7 +46,7 @@ interface PointOfInterest {
   activityIds: string[];
 }
 
-type ActivityTemplate = 'dialogue' | 'match';
+type ActivityTemplate = 'dialogue' | 'match' | 'roleplay';
 
 interface Activity {
   id: string;
@@ -56,7 +56,7 @@ interface Activity {
   titleAr: string;
   titleHe: string;
   points: number;
-  content: DialogueContent | MatchContent;
+  content: DialogueContent | MatchContent | RoleplayContent;
   status: 'approved';      // בעתיד: draft | pending | approved | rejected
   createdBy: 'team';       // בעתיד: מזהה מורה
 }
@@ -78,7 +78,12 @@ interface MatchContent {
 }
 ```
 
+`RoleplayContent` (ראו `src/types.ts`): דמות, תרחיש, ברכה/סיום, ו-`levels` – רשימת "מטרות" (נושאים שהתלמיד צריך לדבר עליהם) לכל רמה. השרת קורא את התרחיש מהקובץ לפי `activityId`, לא מהבקשה.
+
 קבצים: `src/content/regions.json`, `pois.json`, `activities.json`.
+
+## פנייה לתלמיד/ה
+עברית היא שפה ממוגדרת. התלמיד/ה בוחר/ת בהרשמה "לשון זכר / לשון נקבה" (`Progress.addressAs`, ניתן לשינוי בפרופיל), והבחירה נשלחת ל-AI. לעולם לא מנחשים מגדר לפי שם; כשלא ידוע – פונים ברבים (אתם).
 
 ## מסכים לבנות (לפי סדר)
 

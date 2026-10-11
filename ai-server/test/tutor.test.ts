@@ -183,6 +183,15 @@ describe('HTTP server', () => {
   });
 });
 
+describe('addressing', async () => {
+  const { levelNote } = await import('../src/prompt');
+  test('the chosen form reaches the model; unknown means plural', () => {
+    assert.match(levelNote('A2', 'female'), /feminine/);
+    assert.match(levelNote('A2', 'male'), /masculine/);
+    assert.match(levelNote('A2'), /plural/);
+  });
+});
+
 describe('correction clean-up', async () => {
   const { dropNoopCorrection } = await import('../src/provider');
   test('drops a correction that changes nothing', () => {

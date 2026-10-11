@@ -1,7 +1,7 @@
 import { getActivity } from '../../src/lib/content';
 import { goalsFor, scriptedTurn } from '../../src/lib/roleplay';
 import type { RoleplayContent } from '../../src/types';
-import { ROLEPLAY_PROMPT } from './prompt';
+import { ROLEPLAY_PROMPT, addressNote } from './prompt';
 import { generateChecked, getProvider } from './provider';
 import {
   roleplayJsonSchema,
@@ -45,11 +45,11 @@ export async function roleplayReply(req: RoleplayRequest): Promise<RoleplayReply
     '[Role-play setup]',
     `Your character: ${content.character.roleHe}. Your name: ${content.character.nameHe}.`,
     `Student level: ${level}.`,
+    addressNote(req.addressAs),
     'Goals (id: topic):',
     ...goals.map((g) => `- ${g.id}: ${g.labelHe} / ${g.labelAr}`),
   ].join('\n');
-  const genderNote =
-    "Don't assume the student's gender from their name: use the plural (אתם) unless they showed it themselves (בן/בת, גר/גרה), and never correct the gender they chose.";
+  const genderNote = addressNote(req.addressAs);
   const openNote = open.length
     ? `[Open goals: ${open.map((g) => g.id).join(', ')}. ${genderNote}]`
     : `[No open goals: close the conversation warmly. ${genderNote}]`;

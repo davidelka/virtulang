@@ -70,6 +70,8 @@ describe('introduction role-play (mock)', () => {
   test('request validation', () => {
     const ok = { activityId: 'intro-roleplay', level: 'A1', met: [], messages: [] };
     assert.ok(RoleplayRequest.safeParse(ok).success);
+    assert.ok(RoleplayRequest.safeParse({ ...ok, addressAs: 'female' }).success);
+    assert.ok(!RoleplayRequest.safeParse({ ...ok, addressAs: 'other' }).success);
     assert.ok(!RoleplayRequest.safeParse({ ...ok, messages: [{ role: 'tutor', text: 'x' }] }).success);
     assert.ok(!RoleplayRequest.safeParse({ ...ok, activityId: '' }).success);
   });

@@ -9,6 +9,7 @@ const initial: Progress = {
   name: '',
   classCode: '',
   avatarId: null,
+  addressAs: null,
   level: 'A2', // mock: no placement test yet
   points: 0,
   stars: {},
@@ -55,8 +56,12 @@ export const actions = {
     set((p) => ({ ...p, name, classCode }));
   },
 
-  chooseAvatar(avatarId: string) {
-    set((p) => ({ ...p, avatarId }));
+  chooseAvatar(avatarId: string, addressAs: VoiceGender) {
+    set((p) => ({ ...p, avatarId, addressAs }));
+  },
+
+  setAddressAs(addressAs: VoiceGender) {
+    set((p) => ({ ...p, addressAs }));
   },
 
   visitRegion(regionId: string) {
@@ -106,6 +111,7 @@ export const actions = {
       name: 'سلامة',
       classCode: '1234',
       avatarId: 'a1',
+      addressAs: 'female',
       points: 85,
       stars: { 'bus-ticket': 3, 'food-words': 2 },
       lastRegionId: 'city',

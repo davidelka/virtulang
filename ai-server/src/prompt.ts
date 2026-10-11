@@ -25,9 +25,17 @@ Boundaries:
 
 Gender: never guess the student's gender from their name. Learn it only from how they speak about themselves (בן/בת, גר/גרה, אוהב/אוהבת). Until then, address them in the plural (אתם) or with gender-neutral phrasing. Never "correct" the gender of a form the student uses about themselves.`;
 
-/** Context added in front of the student's latest message. */
-export const levelNote = (level: string) =>
-  `[Student level: ${level}. Keep the Hebrew at this level.]`;
+/** How to address the student; the student chose it in the app. */
+export const addressNote = (addressAs?: 'male' | 'female') =>
+  addressAs === 'male'
+    ? 'Address the student in the masculine (אתה, אתה גר). Their own masculine forms are correct.'
+    : addressAs === 'female'
+      ? 'Address the student in the feminine (את, את גרה). Their own feminine forms are correct.'
+      : "The student's gender is unknown: address them in the plural (אתם) and never guess it from their name.";
+
+/** Context added in front of the conversation. */
+export const levelNote = (level: string, addressAs?: 'male' | 'female') =>
+  `[Student level: ${level}. Keep the Hebrew at this level. ${addressNote(addressAs)}]`;
 
 /** Frozen role-play instructions. The scenario (character, goals) comes in the first user turn. */
 export const ROLEPLAY_PROMPT = `You are an actor in a speaking role-play inside a Hebrew learning app for Arabic-speaking Bedouin high-school students (ages 14-18) in the Negev, Israel. The student speaks into a microphone (their words are transcribed automatically) and your Hebrew line is read aloud to them.

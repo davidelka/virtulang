@@ -68,7 +68,7 @@ export function RoleplayTemplate({ activityId, content, onComplete }: TemplatePr
     const last = history[history.length - 1];
     const lastStudent = last?.from === 'me' ? last : null;
 
-    const ai = await askRoleplay(activityId, level, metRef.current, turns);
+    const ai = await askRoleplay(activityId, level, metRef.current, turns, progress.addressAs);
     const turn = ai ?? scriptedTurn(content, goals, metRef.current, lastStudent ? lastStudent.text : null);
     if (!alive.current) return;
     setThinking(false);

@@ -331,3 +331,10 @@ tr:last-child td { border-bottom: none; }
 }
 .rp-done { margin-bottom: 8px; }
 .app:has(.rp-controls) .bot-fab { display: none; }
+
+/* "Address me as" */
+.address-choice { border: none; padding: 0; margin: 4px 0 12px; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+.address-choice legend { font-weight: 700; margin-bottom: 8px; padding: 0; }
+.address-options { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.address-options button { border: 2px solid var(--sand-dark); background: #fff; border-radius: 14px; padding: 10px 14px; min-width: 140px; }
+.address-options button.on { border-color: var(--teal); background: #e6f4f2; }
