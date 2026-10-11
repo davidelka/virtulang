@@ -4,12 +4,14 @@ import type { AddressInfo } from 'node:net';
 import { after, before, describe, test } from 'node:test';
 import { TutorRequest, TutorReply } from '../src/schema';
 import { createTutorServer } from '../src/server';
-import { getMode, trimHistory, tutorReply } from '../src/tutor';
+import { REPLY_JSON_SCHEMA } from '../src/gemini';
+import { getProvider } from '../src/provider';
+import { trimHistory, tutorReply } from '../src/tutor';
 
 const ask = (text: string) => tutorReply({ level: 'A2', messages: [{ role: 'student', text }] });
 
 describe('mock tutor', () => {
-  test('runs in mock mode', () => assert.equal(getMode(), 'mock'));
+  test('runs in mock mode', () => assert.equal(getProvider(), 'mock'));
 
   test('how do I say (Arabic word) → Hebrew', async () => {
     const r = await ask('كيف أقول خبز؟');
@@ -29,6 +31,41 @@ describe('mock tutor', () => {
 
   test('unknown input → fallback hint', async () => {
     assert.match((await ask('blah blah')).he, /איך אומרים/);
+  });
+});
+
+describe('provider selection', () => {
+  const KEYS = ['AI_MOCK', 'AI_PROVIDER', 'ANTHROPIC_API_KEY', 'GEMINI_API_KEY'] as const;
+  const withEnv = (env: Partial<Record<(typeof KEYS)[number], string>>, fn: () => void) => {
+    const saved = Object.fromEntries(KEYS.map((k) => [k, process.env[k]]));
+    for (const k of KEYS) delete process.env[k];
+    Object.assign(process.env, env);
+    try {
+      fn();
+    } finally {
+      for (const k of KEYS) {
+        if (saved[k] === undefined) delete process.env[k];
+        else process.env[k] = saved[k];
+      }
+    }
+  };
+
+  test('no keys → mock', () => withEnv({}, () => assert.equal(getProvider(), 'mock')));
+  test('only a Gemini key → gemini', () => withEnv({ GEMINI_API_KEY: 'g' }, () => assert.equal(getProvider(), 'gemini')));
+  test('only a Claude key → claude', () => withEnv({ ANTHROPIC_API_KEY: 'a' }, () => assert.equal(getProvider(), 'claude')));
+  test('AI_PROVIDER picks between two keys', () =>
+    withEnv({ ANTHROPIC_API_KEY: 'a', GEMINI_API_KEY: 'g', AI_PROVIDER: 'gemini' }, () =>
+      assert.equal(getProvider(), 'gemini'),
+    ));
+  test('AI_PROVIDER without its key → mock', () =>
+    withEnv({ ANTHROPIC_API_KEY: 'a', AI_PROVIDER: 'gemini' }, () => assert.equal(getProvider(), 'mock')));
+  test('AI_MOCK=1 wins', () => withEnv({ GEMINI_API_KEY: 'g', AI_MOCK: '1' }, () => assert.equal(getProvider(), 'mock')));
+});
+
+describe('Gemini output schema', () => {
+  test('requires the same fields as ModelReply and allows a null correction', () => {
+    assert.deepEqual([...REPLY_JSON_SCHEMA.required].sort(), ['ar', 'correction', 'he']);
+    assert.deepEqual(REPLY_JSON_SCHEMA.properties.correction.type, ['object', 'null']);
   });
 });
 

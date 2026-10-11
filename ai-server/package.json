@@ -8,10 +8,12 @@
     "start": "tsx --env-file-if-exists=.env src/main.ts",
     "chat": "tsx --env-file-if-exists=.env src/cli.ts",
     "test": "AI_MOCK=1 tsx --test test/*.test.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "models": "tsx --env-file-if-exists=.env src/models.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.133.0",
+    "@google/genai": "^2.28.0",
     "zod": "^4.6.6"
   },
   "devDependencies": {

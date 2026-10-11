@@ -1,11 +1,6 @@
-import { askClaude } from './claude';
 import { fallbackReply, mockReply } from './mock';
+import { askModel, getProvider } from './provider';
 import { MAX_HISTORY, type TutorReply, type TutorRequest } from './schema';
-
-export type Mode = 'mock' | 'claude';
-
-export const getMode = (): Mode =>
-  process.env.AI_MOCK === '1' || !process.env.ANTHROPIC_API_KEY ? 'mock' : 'claude';
 
 /** Keeps the last MAX_HISTORY messages and makes sure the conversation starts with the student. */
 export function trimHistory(messages: TutorRequest['messages']): TutorRequest['messages'] {
@@ -16,7 +11,8 @@ export function trimHistory(messages: TutorRequest['messages']): TutorRequest['m
 
 export async function tutorReply(input: TutorRequest): Promise<TutorReply> {
   const req = { ...input, messages: trimHistory(input.messages) };
-  if (getMode() === 'mock') return { ...mockReply(req), source: 'mock' };
-  const reply = await askClaude(req);
-  return reply ? { ...reply, source: 'claude' } : { ...fallbackReply(), source: 'fallback' };
+  const provider = getProvider();
+  if (provider === 'mock') return { ...mockReply(req), source: 'mock' };
+  const reply = await askModel(provider, req);
+  return reply ? { ...reply, source: provider } : { ...fallbackReply(), source: 'fallback' };
 }

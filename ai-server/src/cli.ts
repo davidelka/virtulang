@@ -2,14 +2,15 @@
 import { createInterface } from 'node:readline';
 import { stdin, stdout } from 'node:process';
 import { Level, type TutorRequest } from './schema';
-import { getMode, tutorReply } from './tutor';
+import { getProvider, modelName } from './provider';
+import { tutorReply } from './tutor';
 
 const levelArg = process.argv.indexOf('--level');
 const level = Level.parse(levelArg > -1 ? process.argv[levelArg + 1] : 'A2');
 const history: TutorRequest['messages'] = [];
 const rl = createInterface({ input: stdin, output: stdout });
 
-console.log(`Hebrew tutor (${getMode()} mode, level ${level}). Type in Arabic or Hebrew; empty line to quit.\n`);
+console.log(`Hebrew tutor (${getProvider()}${modelName() ? ` · ${modelName()}` : ''}, level ${level}). Type in Arabic or Hebrew; empty line to quit.\n`);
 rl.setPrompt('you> ');
 rl.prompt();
 for await (const line of rl) {

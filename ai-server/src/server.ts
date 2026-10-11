@@ -1,7 +1,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
-import { Anthropic, MODEL } from './claude';
+import { getProvider, modelName, providerErrorStatus } from './provider';
 import { TutorRequest } from './schema';
-import { getMode, tutorReply } from './tutor';
+import { tutorReply } from './tutor';
 
 const MAX_BODY = 20_000;
 
@@ -42,15 +42,6 @@ async function readJson(req: IncomingMessage): Promise<unknown> {
   }
 }
 
-/** Retryable API problems → 503; anything else from the API → 502. */
-function apiErrorStatus(err: unknown): number | null {
-  if (err instanceof Anthropic.RateLimitError) return 503;
-  if (err instanceof Anthropic.APIConnectionError) return 503;
-  if (err instanceof Anthropic.InternalServerError) return 503;
-  if (err instanceof Anthropic.APIError) return 502;
-  return null;
-}
-
 export function createTutorServer(allowedOrigin = process.env.ALLOWED_ORIGIN ?? 'http://localhost:5173') {
   return createServer(async (req, res) => {
     if (req.headers.origin === allowedOrigin) {
@@ -65,7 +56,7 @@ export function createTutorServer(allowedOrigin = process.env.ALLOWED_ORIGIN ?? 
         return;
       }
       if (req.method === 'GET' && req.url === '/health') {
-        send(res, 200, { ok: true, mode: getMode(), model: getMode() === 'claude' ? MODEL : null });
+        send(res, 200, { ok: true, mode: getProvider(), model: modelName() });
         return;
       }
       if (req.method === 'POST' && req.url === '/api/tutor') {
@@ -80,10 +71,10 @@ export function createTutorServer(allowedOrigin = process.env.ALLOWED_ORIGIN ?? 
       send(res, 404, { error: ERRORS.notFound });
     } catch (err) {
       if (err instanceof HttpError) return send(res, err.status, err.body);
-      const status = apiErrorStatus(err);
+      const status = providerErrorStatus(err);
       if (status) {
-        const apiStatus = err instanceof Anthropic.APIError ? err.status : undefined;
-        console.error(JSON.stringify({ event: 'claude_error', status: apiStatus, type: (err as Error).name }));
+        const apiStatus = (err as { status?: number }).status;
+        console.error(JSON.stringify({ event: 'provider_error', provider: getProvider(), status: apiStatus, type: (err as Error).name }));
         return send(res, status, { error: status === 503 ? ERRORS.busy : ERRORS.failed });
       }
       console.error(err);

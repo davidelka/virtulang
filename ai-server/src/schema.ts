@@ -38,7 +38,7 @@ export const ModelReply = z.object({
 });
 
 export const TutorReply = ModelReply.extend({
-  source: z.enum(['claude', 'mock', 'fallback']),
+  source: z.enum(['claude', 'gemini', 'mock', 'fallback']),
 });
 
 export type TutorRequest = z.infer<typeof TutorRequest>;
