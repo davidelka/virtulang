@@ -1,9 +1,13 @@
 // The only file that talks to the Gemini API.
-import { ApiError, GoogleGenAI } from '@google/genai';
+import { ApiError, GoogleGenAI, ThinkingLevel } from '@google/genai';
 import { SYSTEM_PROMPT, levelNote } from './prompt';
 import { ModelReply, type TutorRequest } from './schema';
 
 export const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
+/** Tried once when the main model is overloaded (429/503) even after retries. Empty string disables it. */
+export const GEMINI_BACKUP_MODEL = process.env.GEMINI_BACKUP_MODEL ?? 'gemini-3.5-flash';
+
+const isOverloaded = (err: unknown) => err instanceof ApiError && (err.status === 429 || err.status === 503);
 
 /** ModelReply as JSON Schema, using only keywords the Gemini API documents (nullable via a type array). */
 export const REPLY_JSON_SCHEMA = {
@@ -26,7 +30,12 @@ export const REPLY_JSON_SCHEMA = {
 } as const;
 
 let ai: GoogleGenAI | null = null;
-const getAi = () => (ai ??= new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }));
+const getAi = () =>
+  (ai ??= new GoogleGenAI({
+    apiKey: process.env.GEMINI_API_KEY,
+    // "High demand" 503s and rate limits are usually brief: retry twice, quickly, then give up.
+    httpOptions: { timeout: 30_000, retryOptions: { attempts: 3, initialDelay: 1, maxDelay: 4 } },
+  }));
 
 /** Returns the parsed reply, or null if the model blocked the request or the output didn't parse. */
 export async function askGemini(req: TutorRequest): Promise<ModelReply | null> {
@@ -36,15 +45,26 @@ export async function askGemini(req: TutorRequest): Promise<ModelReply | null> {
   }));
 
   const started = Date.now();
-  const res = await getAi().models.generateContent({
-    model: GEMINI_MODEL,
-    contents,
-    config: {
-      systemInstruction: SYSTEM_PROMPT,
-      responseMimeType: 'application/json',
-      responseJsonSchema: REPLY_JSON_SCHEMA,
-    },
-  });
+  const generate = (model: string) =>
+    getAi().models.generateContent({
+      model,
+      contents,
+      config: {
+        systemInstruction: SYSTEM_PROMPT,
+        responseMimeType: 'application/json',
+        responseJsonSchema: REPLY_JSON_SCHEMA,
+        thinkingConfig: { thinkingLevel: ThinkingLevel.LOW }, // a chat reply doesn't need deep reasoning; keeps latency down
+      },
+    });
+
+  let res;
+  try {
+    res = await generate(GEMINI_MODEL);
+  } catch (err) {
+    if (!isOverloaded(err) || !GEMINI_BACKUP_MODEL || GEMINI_BACKUP_MODEL === GEMINI_MODEL) throw err;
+    console.log(JSON.stringify({ event: 'gemini_backup', from: GEMINI_MODEL, to: GEMINI_BACKUP_MODEL }));
+    res = await generate(GEMINI_BACKUP_MODEL);
+  }
 
   // Usage only — never log what students wrote.
   const u = res.usageMetadata;

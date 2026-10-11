@@ -15,6 +15,8 @@ the app is not connected to it yet.
 | both keys | Claude, unless `AI_PROVIDER=gemini` |
 | `AI_MOCK=1` | mock, whatever else is set |
 
+If the main Gemini model is overloaded (Google returns 503/429 even after 3 tries), one attempt is made with `GEMINI_BACKUP_MODEL` (default `gemini-3.5-flash`).
+
 Gemini key: https://aistudio.google.com/apikey · `npm run models` lists the Gemini models your key can use.
 
 ## Run
