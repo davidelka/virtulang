@@ -24,13 +24,15 @@ Gemini key: https://aistudio.google.com/apikey · `npm run models` lists the Gem
 cd ai-server
 npm install
 cp .env.example .env      # optional: add GEMINI_API_KEY or ANTHROPIC_API_KEY
-npm run dev               # http://localhost:8787
+npm run dev               # http://localhost:8787 — open it in a browser for a test chat page
 npm run chat              # talk to the tutor in the terminal (--level A1|A2|B1|B2)
 npm run models            # Gemini models available to your key
 npm test                  # mock mode only, no network
 ```
 
 ## API
+`GET /` → a simple test chat page (for trying the tutor in a browser; not used by the app)
+
 `GET /health` → `{ ok, mode: "mock" | "claude", model }`
 
 `POST /api/tutor`

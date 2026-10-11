@@ -145,6 +145,13 @@ describe('HTTP server', () => {
     assert.equal((await post({ level: 'A2', pad: 'x'.repeat(25_000), messages: [] })).status, 413);
   });
 
+  test('GET / serves the test page', async () => {
+    const res = await fetch(`${base}/`);
+    assert.equal(res.status, 200);
+    assert.match(res.headers.get('content-type') ?? '', /text\/html/);
+    assert.match(await res.text(), /\/api\/tutor/);
+  });
+
   test('unknown route → 404', async () => {
     assert.equal((await fetch(`${base}/nope`)).status, 404);
   });

@@ -1,4 +1,5 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
+import { TEST_PAGE } from './page';
 import { getProvider, modelName, providerErrorStatus } from './provider';
 import { TutorRequest } from './schema';
 import { tutorReply } from './tutor';
@@ -53,6 +54,11 @@ export function createTutorServer(allowedOrigin = process.env.ALLOWED_ORIGIN ?? 
     try {
       if (req.method === 'OPTIONS') {
         res.writeHead(204).end();
+        return;
+      }
+      if (req.method === 'GET' && req.url === '/') {
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.end(TEST_PAGE);
         return;
       }
       if (req.method === 'GET' && req.url === '/health') {
