@@ -10,12 +10,12 @@ the app is not connected to it yet.
 | Set in `.env` | Uses |
 |---|---|
 | nothing | mock |
-| `GEMINI_API_KEY` only | Gemini (`GEMINI_MODEL`, default `gemini-3.8-flash`) |
+| `GEMINI_API_KEY` only | Gemini (`GEMINI_MODEL`, default `gemini-3.5-flash-lite`) |
 | `ANTHROPIC_API_KEY` only | Claude (`CLAUDE_MODEL`, default `claude-opus-5-5`) |
 | both keys | Claude, unless `AI_PROVIDER=gemini` |
 | `AI_MOCK=1` | mock, whatever else is set |
 
-If the main Gemini model is overloaded (Google returns 503/429 even after 3 tries), one attempt is made with `GEMINI_BACKUP_MODEL` (default `gemini-3.5-flash`).
+If the main Gemini model is overloaded or slow (2 tries of up to 10 s each — Gemini's minimum deadline), one attempt is made with `GEMINI_BACKUP_MODEL` (default `gemini-3.1-flash-lite`), so a reply comes within ~33 s; the app waits 40 s.
 
 Gemini key: https://aistudio.google.com/apikey · `npm run models` lists the Gemini models your key can use.
 
@@ -51,7 +51,8 @@ npm test                  # mock mode only, no network
 CORS allows only `ALLOWED_ORIGIN` (default `http://localhost:5173`, the app's dev server).
 
 ## Notes
-- Cheaper models: `GEMINI_MODEL=gemini-3.5-flash-lite`, `CLAUDE_MODEL=claude-haiku-5-5`.
+- Gemini default is the fast `gemini-3.5-flash-lite` (~1 s replies, good for spoken chat). `gemini-3.8-flash` is stronger but slower, and its free tier allowed only 20 requests a day when tested. Free-tier limits per model are shown in Google AI Studio.
+- Cheaper Claude: `CLAUDE_MODEL=claude-haiku-5-5`.
 - **Gemini free tier:** check Google's current terms on how free-tier data is used before sending real students' messages; use the paid tier for that.
 - Logs record token usage and latency only, never what students wrote.
 - Before real students use an AI mode: consent from the school/parents, and no identifying details in messages.

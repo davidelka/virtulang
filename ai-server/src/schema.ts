@@ -15,10 +15,11 @@ export const ChatMessage = z.object({
 export const TutorRequest = z
   .object({
     level: Level,
+    // Empty = start the conversation (the tutor greets and asks a question).
     // Longer histories are accepted and trimmed to the last MAX_HISTORY messages.
-    messages: z.array(ChatMessage).min(1).max(100),
+    messages: z.array(ChatMessage).max(100),
   })
-  .refine((r) => r.messages.at(-1)?.role === 'student', {
+  .refine((r) => r.messages.length === 0 || r.messages.at(-1)?.role === 'student', {
     message: 'the last message must be from the student',
     path: ['messages'],
   });

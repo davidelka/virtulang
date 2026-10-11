@@ -138,7 +138,14 @@ export const he: typeof ar = {
     micStop: 'עצירה',
     micLang: { he: 'עב', ar: 'عر' },
     micLangLabel: 'שפת המיקרופון',
-    suggestions: ['שלום', 'كيف أقول خبز؟', 'ترجمة: תודה'],
+    tapToTalk: 'לחצו ודברו',
+    listening: 'מקשיב... לחצו כשסיימתם',
+    thinking: 'המורה חושב...',
+    yourTurn: 'תורכם! ענו בקול',
+    offline: 'תשובה פשוטה — המורה החכם לא מחובר',
+    noSpeech: 'לא שמעתי. לחצו על המיקרופון ודברו.',
+    micBlocked: 'אין גישה למיקרופון. אשרו גישה בדפדפן, או כתבו.',
+    micUnavailable: 'זיהוי דיבור לא עובד בדפדפן הזה. השתמשו ב-Google Chrome, או כתבו.',
   },
 
   teacher: {

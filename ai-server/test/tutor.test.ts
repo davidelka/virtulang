@@ -6,7 +6,7 @@ import { TutorRequest, TutorReply } from '../src/schema';
 import { createTutorServer } from '../src/server';
 import { REPLY_JSON_SCHEMA } from '../src/gemini';
 import { getProvider } from '../src/provider';
-import { trimHistory, tutorReply } from '../src/tutor';
+import { START_SIGNAL, scriptsLookRight, trimHistory, tutorReply } from '../src/tutor';
 
 const ask = (text: string) => tutorReply({ level: 'A2', messages: [{ role: 'student', text }] });
 
@@ -69,11 +69,37 @@ describe('Gemini output schema', () => {
   });
 });
 
+describe('tutor starts the conversation', () => {
+  test('empty history → greeting with a question', async () => {
+    const r = await tutorReply({ level: 'A2', messages: [] });
+    assert.equal(r.source, 'mock');
+    assert.match(r.he, /\?/);
+  });
+
+  test('history opening with the tutor keeps its question, behind the start signal', () => {
+    const t = trimHistory([
+      { role: 'tutor', text: 'מה אכלת היום?' },
+      { role: 'student', text: 'אכלתי פיתה' },
+    ]);
+    assert.equal(t[0].text, START_SIGNAL);
+    assert.equal(t[1].text, 'מה אכלת היום?');
+  });
+});
+
+describe('garbled output check', () => {
+  const r = (he: string, ar: string) => ({ he, ar, correction: null });
+  test('normal reply passes', () => assert.ok(scriptsLookRight(r('שלום! מה שלומך?', 'مرحبًا! كيف حالك؟'))));
+  test('Arabic quoting a Hebrew word passes', () => assert.ok(scriptsLookRight(r('אומרים: לחם', '«خبز» بالعبرية: «לחם»'))));
+  test('Arabic written in Hebrew letters fails', () =>
+    assert.ok(!scriptsLookRight(r('שלום! מה שלומך?', 'אחלא וסחלא! קיפ חאלכ אליום?'))));
+  test('Hebrew field in Arabic fails', () => assert.ok(!scriptsLookRight(r('مرحبا كيف حالك', 'مرحبًا! كيف حالك؟'))));
+});
+
 describe('request validation', () => {
   const valid = { level: 'A1', messages: [{ role: 'student', text: 'שלום' }] };
 
   test('accepts a valid request', () => assert.ok(TutorRequest.safeParse(valid).success));
-  test('rejects empty history', () => assert.ok(!TutorRequest.safeParse({ ...valid, messages: [] }).success));
+  test('accepts empty history (tutor starts)', () => assert.ok(TutorRequest.safeParse({ ...valid, messages: [] }).success));
   test('rejects last message from tutor', () =>
     assert.ok(
       !TutorRequest.safeParse({ ...valid, messages: [...valid.messages, { role: 'tutor', text: 'היי' }] }).success,
@@ -90,7 +116,7 @@ describe('history trimming', () => {
       text: `m${i}`,
     }));
     const trimmed = trimHistory(long);
-    assert.ok(trimmed.length <= 20);
+    assert.ok(trimmed.length <= 21); // 20 + the start signal when a tutor turn ends up first
     assert.equal(trimmed[0].role, 'student');
     assert.equal(trimmed.at(-1)!.text, 'm30');
   });
@@ -138,7 +164,7 @@ describe('HTTP server', () => {
   });
 
   test('invalid request → 400', async () => {
-    assert.equal((await post({ level: 'A2', messages: [] })).status, 400);
+    assert.equal((await post({ level: 'A2', messages: [{ role: 'tutor', text: 'היי' }] })).status, 400);
   });
 
   test('body over 20 KB → 413', async () => {

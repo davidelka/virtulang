@@ -113,6 +113,12 @@ export interface Progress {
   voice: VoiceGender;
 }
 
+export interface TutorCorrection {
+  said: string;
+  better: string;
+  noteAr: string;
+}
+
 export interface BotText {
   he: string;
   ar: string;

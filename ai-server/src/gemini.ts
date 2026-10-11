@@ -3,11 +3,17 @@ import { ApiError, GoogleGenAI, ThinkingLevel } from '@google/genai';
 import { SYSTEM_PROMPT, levelNote } from './prompt';
 import { ModelReply, type TutorRequest } from './schema';
 
-export const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
-/** Tried once when the main model is overloaded (429/503) even after retries. Empty string disables it. */
-export const GEMINI_BACKUP_MODEL = process.env.GEMINI_BACKUP_MODEL ?? 'gemini-3.5-flash';
+export const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
+/** Tried once when the main model is overloaded, failing or too slow. Empty string disables it. */
+export const GEMINI_BACKUP_MODEL = process.env.GEMINI_BACKUP_MODEL ?? 'gemini-3.1-flash-lite';
 
-const isOverloaded = (err: unknown) => err instanceof ApiError && (err.status === 429 || err.status === 503);
+/** Worth trying the backup model: rate limit, server error, timeout or network failure (not a bad request or key). */
+const shouldTryBackup = (err: unknown) => !(err instanceof ApiError) || err.status === 429 || err.status >= 500;
+
+// Time budget (Gemini's minimum deadline is 10 s): main model 2 tries × 10 s, backup 1 try × 12 s
+// → done within ~33 s; the app waits 40 s.
+const MAIN_HTTP = { timeout: 10_000, retryOptions: { attempts: 2, initialDelay: 0.5, maxDelay: 1 } };
+const BACKUP_HTTP = { timeout: 12_000, retryOptions: { attempts: 1 } };
 
 /** ModelReply as JSON Schema, using only keywords the Gemini API documents (nullable via a type array). */
 export const REPLY_JSON_SCHEMA = {
@@ -33,8 +39,6 @@ let ai: GoogleGenAI | null = null;
 const getAi = () =>
   (ai ??= new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY,
-    // "High demand" 503s and rate limits are usually brief: retry twice, quickly, then give up.
-    httpOptions: { timeout: 30_000, retryOptions: { attempts: 3, initialDelay: 1, maxDelay: 4 } },
   }));
 
 /** Returns the parsed reply, or null if the model blocked the request or the output didn't parse. */
@@ -45,11 +49,12 @@ export async function askGemini(req: TutorRequest): Promise<ModelReply | null> {
   }));
 
   const started = Date.now();
-  const generate = (model: string) =>
+  const generate = (model: string, httpOptions: typeof MAIN_HTTP | typeof BACKUP_HTTP) =>
     getAi().models.generateContent({
       model,
       contents,
       config: {
+        httpOptions,
         systemInstruction: SYSTEM_PROMPT,
         responseMimeType: 'application/json',
         responseJsonSchema: REPLY_JSON_SCHEMA,
@@ -59,11 +64,12 @@ export async function askGemini(req: TutorRequest): Promise<ModelReply | null> {
 
   let res;
   try {
-    res = await generate(GEMINI_MODEL);
+    res = await generate(GEMINI_MODEL, MAIN_HTTP);
   } catch (err) {
-    if (!isOverloaded(err) || !GEMINI_BACKUP_MODEL || GEMINI_BACKUP_MODEL === GEMINI_MODEL) throw err;
-    console.log(JSON.stringify({ event: 'gemini_backup', from: GEMINI_MODEL, to: GEMINI_BACKUP_MODEL }));
-    res = await generate(GEMINI_BACKUP_MODEL);
+    if (!shouldTryBackup(err) || !GEMINI_BACKUP_MODEL || GEMINI_BACKUP_MODEL === GEMINI_MODEL) throw err;
+    const reason = err instanceof ApiError ? err.status : (err as Error).name;
+    console.log(JSON.stringify({ event: 'gemini_backup', from: GEMINI_MODEL, to: GEMINI_BACKUP_MODEL, reason }));
+    res = await generate(GEMINI_BACKUP_MODEL, BACKUP_HTTP);
   }
 
   // Usage only — never log what students wrote.
