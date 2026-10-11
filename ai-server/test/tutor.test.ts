@@ -140,7 +140,7 @@ describe('HTTP server', () => {
 
   test('GET /health', async () => {
     const res = await fetch(`${base}/health`);
-    assert.deepEqual(await res.json(), { ok: true, mode: 'mock', model: null });
+    assert.deepEqual(await res.json(), { ok: true, mode: 'mock', model: null, tts: false });
   });
 
   test('POST /api/tutor returns a reply and CORS for the app origin', async () => {
@@ -176,6 +176,18 @@ describe('HTTP server', () => {
     assert.equal(res.status, 200);
     assert.match(res.headers.get('content-type') ?? '', /text\/html/);
     assert.match(await res.text(), /\/api\/tutor/);
+  });
+
+  test('TTS: not available in mock mode → 503 (the app uses the browser voice)', async () => {
+    const res = await fetch(`${base}/api/tts?voice=female&text=${encodeURIComponent('שלום')}`);
+    assert.equal(res.status, 503);
+  });
+
+  test('TTS: rejects non-Hebrew, too long, or bad voice → 400', async () => {
+    const tts = (q: string) => fetch(`${base}/api/tts?${q}`).then((r) => r.status);
+    assert.equal(await tts(`voice=female&text=${encodeURIComponent('hello')}`), 400);
+    assert.equal(await tts(`voice=female&text=${encodeURIComponent('א'.repeat(301))}`), 400);
+    assert.equal(await tts(`voice=robot&text=${encodeURIComponent('שלום')}`), 400);
   });
 
   test('unknown route → 404', async () => {

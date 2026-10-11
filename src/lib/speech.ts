@@ -1,25 +1,83 @@
 import type { VoiceGender } from '../types';
 
 // ---------- Text to speech ----------
+// First choice: the AI server's natural Hebrew voice (Gemini TTS, cached on the server).
+// Fallback: the browser's own voice (fine on Android; robotic or missing on desktop Linux).
 
-export const canSpeak = typeof window !== 'undefined' && 'speechSynthesis' in window;
+const hasBrowserVoice = typeof window !== 'undefined' && 'speechSynthesis' in window;
+export const canSpeak = typeof window !== 'undefined' && (typeof Audio !== 'undefined' || hasBrowserVoice);
+
+const BASE = import.meta.env.VITE_AI_URL ?? '';
+const SERVER_TIMEOUT_MS = 20_000; // a new sentence takes ~5-7 s to record; cached ones are instant
+const SERVER_RETRY_AFTER_MS = 60_000; // after a failure, use the browser voice for a minute
+const SERVER_MAX_CHARS = 300;
+
+let serverDownUntil = 0;
+let currentAudio: HTMLAudioElement | null = null;
+let speakId = 0; // a newer speakHebrew() or stopSpeaking() cancels the older one
+
+/** 1 = the voice's normal speed. Slower suits learners (browser voice; the server voice is slow by style). */
+export const SPEECH_RATE = 0.75;
+
+/** Speaks Hebrew text. Resolves when done, stopped, or if no voice is available. */
+export async function speakHebrew(text: string, gender: VoiceGender): Promise<void> {
+  stopSpeaking();
+  const id = ++speakId;
+  const serverOk = Date.now() >= serverDownUntil && text.length <= SERVER_MAX_CHARS && /[\u05D0-\u05EA]/.test(text);
+  if (serverOk) {
+    const result = await playServerVoice(text, gender, id);
+    if (result !== 'failed') return;
+    serverDownUntil = Date.now() + SERVER_RETRY_AFTER_MS;
+  }
+  if (id === speakId) await browserSpeak(text, gender);
+}
+
+export function stopSpeaking() {
+  speakId++;
+  currentAudio?.pause();
+  currentAudio = null;
+  if (hasBrowserVoice) speechSynthesis.cancel();
+}
+
+async function playServerVoice(text: string, gender: VoiceGender, id: number): Promise<'played' | 'cancelled' | 'failed'> {
+  try {
+    const res = await fetch(`${BASE}/api/tts?voice=${gender}&text=${encodeURIComponent(text)}`, {
+      signal: AbortSignal.timeout(SERVER_TIMEOUT_MS),
+    });
+    if (!res.ok) return 'failed';
+    const blob = await res.blob();
+    if (id !== speakId) return 'cancelled';
+    const src = URL.createObjectURL(blob);
+    const audio = new Audio(src);
+    currentAudio = audio;
+    try {
+      await new Promise<void>((resolve, reject) => {
+        audio.onended = () => resolve();
+        audio.onpause = () => resolve(); // stopSpeaking()
+        audio.onerror = () => reject(new Error('audio playback failed'));
+        audio.play().catch(reject);
+      });
+    } finally {
+      URL.revokeObjectURL(src);
+    }
+    return 'played';
+  } catch {
+    return id === speakId ? 'failed' : 'cancelled';
+  }
+}
 
 let voices: SpeechSynthesisVoice[] = [];
-if (canSpeak) {
+if (hasBrowserVoice) {
   const load = () => (voices = speechSynthesis.getVoices());
   load();
   speechSynthesis.addEventListener?.('voiceschanged', load);
 }
 
-// Voice names rarely state gender; these cover common Hebrew voices (Carmit, Asaf, ...).
+// Voice names rarely state gender; these cover common Hebrew voices (Carmit, Asaf, espeak's female1/male1).
 const NAME_HINT: Record<VoiceGender, RegExp> = { female: /carmit|female|woman/i, male: /asaf|\bmale|\bman\b/i };
 
-/** 1 = the voice's normal speed. Slower suits learners. */
-export const SPEECH_RATE = 0.75;
-
-/** Speaks Hebrew text. Resolves when done (or immediately if TTS is unavailable). */
-export function speakHebrew(text: string, gender: VoiceGender): Promise<void> {
-  if (!canSpeak) return Promise.resolve();
+function browserSpeak(text: string, gender: VoiceGender): Promise<void> {
+  if (!hasBrowserVoice) return Promise.resolve();
   const he = voices.filter((v) => v.lang.toLowerCase().replace('_', '-').startsWith('he') || v.lang.startsWith('iw'));
   const named = he.find((v) => NAME_HINT[gender].test(v.name));
   const u = new SpeechSynthesisUtterance(text);
@@ -37,8 +95,6 @@ export function speakHebrew(text: string, gender: VoiceGender): Promise<void> {
     setTimeout(() => speechSynthesis.speak(u), 60);
   });
 }
-
-export const stopSpeaking = () => canSpeak && speechSynthesis.cancel();
 
 // ---------- Speech recognition ----------
 

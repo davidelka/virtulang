@@ -3,6 +3,7 @@ import { TEST_PAGE } from './page';
 import { getProvider, modelName, providerErrorStatus } from './provider';
 import { RoleplayRequest, TutorRequest } from './schema';
 import { UnknownActivityError, roleplayReply } from './roleplay';
+import { MAX_TTS_CHARS, speak, ttsAvailable } from './tts';
 import { tutorReply } from './tutor';
 
 const MAX_BODY = 20_000;
@@ -44,6 +45,34 @@ async function readJson(req: IncomingMessage): Promise<unknown> {
   }
 }
 
+const HEBREW_LETTER = /[\u05D0-\u05EA]/;
+
+/** GET /api/tts?voice=female|male&text=… → audio/wav (Hebrew only). */
+async function handleTts(q: URLSearchParams, res: ServerResponse) {
+  const text = (q.get('text') ?? '').trim();
+  const voice = q.get('voice');
+  if (!text || text.length > MAX_TTS_CHARS || !HEBREW_LETTER.test(text) || (voice !== 'female' && voice !== 'male')) {
+    send(res, 400, { error: ERRORS.badRequest });
+    return;
+  }
+  if (!ttsAvailable()) {
+    send(res, 503, { error: ERRORS.busy });
+    return;
+  }
+  try {
+    const audio = await speak(text, voice);
+    res.writeHead(200, {
+      'Content-Type': 'audio/wav',
+      'Content-Length': audio.length,
+      'Cache-Control': 'public, max-age=31536000, immutable', // same text + voice → same audio
+    });
+    res.end(audio);
+  } catch (err) {
+    console.error(JSON.stringify({ event: 'tts_error', status: (err as { status?: number }).status, type: (err as Error).name }));
+    send(res, 503, { error: ERRORS.busy }); // the app falls back to the browser's voice
+  }
+}
+
 export function createTutorServer(allowedOrigin = process.env.ALLOWED_ORIGIN ?? 'http://localhost:5173') {
   return createServer(async (req, res) => {
     if (req.headers.origin === allowedOrigin) {
@@ -63,7 +92,11 @@ export function createTutorServer(allowedOrigin = process.env.ALLOWED_ORIGIN ?? 
         return;
       }
       if (req.method === 'GET' && req.url === '/health') {
-        send(res, 200, { ok: true, mode: getProvider(), model: modelName() });
+        send(res, 200, { ok: true, mode: getProvider(), model: modelName(), tts: ttsAvailable() });
+        return;
+      }
+      if (req.method === 'GET' && req.url?.startsWith('/api/tts?')) {
+        await handleTts(new URL(req.url, 'http://x').searchParams, res);
         return;
       }
       if (req.method === 'POST' && req.url === '/api/tutor') {
