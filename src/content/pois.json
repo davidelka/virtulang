@@ -1,0 +1,9 @@
+[
+  { "id": "station", "regionId": "city", "nameAr": "المحطة المركزية", "nameHe": "התחנה המרכזית", "x": 48, "y": 105, "activityIds": ["bus-ticket", "bus-driver"] },
+  { "id": "clinic", "regionId": "city", "nameAr": "صندوق المرضى", "nameHe": "קופת חולים", "x": 205, "y": 100, "activityIds": ["clinic-appointment", "health-words"] },
+  { "id": "supermarket", "regionId": "city", "nameAr": "السوبرماركت", "nameHe": "הסופרמרקט", "x": 55, "y": 250, "activityIds": ["supermarket-price", "food-words"] },
+  { "id": "interview", "regionId": "daily", "nameAr": "مقابلة عمل", "nameHe": "ראיון עבודה", "x": 350, "y": 255, "activityIds": ["job-interview"] },
+  { "id": "phone", "regionId": "daily", "nameAr": "مكالمة هاتفية", "nameHe": "שיחת טלפון", "x": 350, "y": 410, "activityIds": ["phone-call"] },
+  { "id": "well", "regionId": "games", "nameAr": "بئر الكلمات", "nameHe": "באר המילים", "x": 42, "y": 410, "activityIds": ["daily-words", "time-words"] },
+  { "id": "civics", "regionId": "knowledge", "nameAr": "ركن المعرفة", "nameHe": "פינת הידע", "x": 195, "y": 655, "activityIds": ["civics-words"] }
+]

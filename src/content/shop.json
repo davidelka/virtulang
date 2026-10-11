@@ -1,0 +1,10 @@
+[
+  { "id": "badge-star", "slot": "badge", "nameAr": "نجمة", "nameHe": "כוכב", "unlockAt": 20, "value": "⭐" },
+  { "id": "bg-sunset", "slot": "bg", "nameAr": "غروب الصحراء", "nameHe": "שקיעה במדבר", "unlockAt": 40, "value": "linear-gradient(160deg, #f8b26a, #e76f51)" },
+  { "id": "frame-green", "slot": "frame", "nameAr": "إطار أخضر", "nameHe": "מסגרת ירוקה", "unlockAt": 60, "value": "#2a9d8f" },
+  { "id": "badge-camel", "slot": "badge", "nameAr": "جمل صغير", "nameHe": "גמל קטן", "unlockAt": 80, "value": "🐪" },
+  { "id": "bg-oasis", "slot": "bg", "nameAr": "واحة", "nameHe": "נווה מדבר", "unlockAt": 100, "value": "linear-gradient(160deg, #a8dadc, #2a9d8f)" },
+  { "id": "badge-palm", "slot": "badge", "nameAr": "نخلة", "nameHe": "דקל", "unlockAt": 130, "value": "🌴" },
+  { "id": "frame-gold", "slot": "frame", "nameAr": "إطار ذهبي", "nameHe": "מסגרת זהב", "unlockAt": 160, "value": "#e9c46a" },
+  { "id": "badge-crown", "slot": "badge", "nameAr": "تاج", "nameHe": "כתר", "unlockAt": 200, "value": "👑" }
+]

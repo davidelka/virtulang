@@ -1,0 +1,6 @@
+[
+  { "id": "city", "nameAr": "المدينة", "nameHe": "העיר", "x": 120, "y": 170, "color": "#e07a5f", "icon": "🏙️" },
+  { "id": "daily", "nameAr": "مواقف يومية", "nameHe": "מצבים יומיומיים", "x": 290, "y": 330, "color": "#2a9d8f", "icon": "💬" },
+  { "id": "games", "nameAr": "ألعاب تعليمية", "nameHe": "משחקי למידה", "x": 115, "y": 480, "color": "#e9a23b", "icon": "🎲" },
+  { "id": "knowledge", "nameAr": "معرفة عامة", "nameHe": "ידע כללי", "x": 285, "y": 610, "color": "#6d597a", "icon": "📚", "requiredLevel": "B1" }
+]

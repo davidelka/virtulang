@@ -1,0 +1,12 @@
+[
+  { "id": "s1", "name": "سلامة", "level": "A2", "points": 240, "lastActivityId": "job-interview", "hoursAgo": 2, "minutesThisWeek": 75 },
+  { "id": "s2", "name": "نور", "level": "A2", "points": 310, "lastActivityId": "phone-call", "hoursAgo": 0, "minutesThisWeek": 92 },
+  { "id": "s3", "name": "محمد", "level": "A1", "points": 85, "lastActivityId": "bus-ticket", "hoursAgo": 26, "minutesThisWeek": 18 },
+  { "id": "s4", "name": "آية", "level": "A2", "points": 190, "lastActivityId": "clinic-appointment", "hoursAgo": 5, "minutesThisWeek": 54 },
+  { "id": "s5", "name": "يوسف", "level": "A1", "points": 60, "lastActivityId": "food-words", "hoursAgo": 72, "minutesThisWeek": 9 },
+  { "id": "s6", "name": "ريم", "level": "B1", "points": 420, "lastActivityId": "job-interview", "hoursAgo": 1, "minutesThisWeek": 110 },
+  { "id": "s7", "name": "عبد الله", "level": "A1", "points": 130, "lastActivityId": "daily-words", "hoursAgo": 8, "minutesThisWeek": 40 },
+  { "id": "s8", "name": "هبة", "level": "A2", "points": 215, "lastActivityId": "supermarket-price", "hoursAgo": 3, "minutesThisWeek": 63 },
+  { "id": "s9", "name": "إبراهيم", "level": "A1", "points": 45, "lastActivityId": "time-words", "hoursAgo": 50, "minutesThisWeek": 12 },
+  { "id": "s10", "name": "سجى", "level": "A2", "points": 275, "lastActivityId": "health-words", "hoursAgo": 4, "minutesThisWeek": 81 }
+]

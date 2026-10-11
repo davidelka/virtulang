@@ -1,0 +1,162 @@
+// Hebrew interface text, shown under the Arabic (see components/Tx.tsx). Must mirror ar.ts.
+import type { ar } from './ar';
+
+export const he: typeof ar = {
+  appName: 'עברית יומיומית',
+  tagline: 'מתרגלים עברית מדוברת במצבים מהחיים',
+
+  common: {
+    back: 'חזרה',
+    points: (n: number) => `${n} נקודות`,
+    notFound: 'הדף לא נמצא',
+    toMap: 'למפה',
+  },
+
+  login: {
+    title: 'ברוכים הבאים!',
+    classCode: 'קוד כיתה',
+    classCodeHint: '4 ספרות שמקבלים מהמורה',
+    name: 'השם שלך',
+    namePlaceholder: 'כתבו את השם',
+    submit: 'כניסה',
+    errCode: 'קוד הכיתה הוא 4 ספרות',
+    errName: 'נא לכתוב שם',
+    teacherLink: 'אני מורה — לוח המורה',
+  },
+
+  avatar: {
+    title: 'בחרו דמות',
+    subtitle: 'הדמות תלווה אתכם במסע במדבר',
+    confirm: 'יוצאים לדרך!',
+  },
+
+  topbar: {
+    profile: 'הפרופיל שלי',
+    streak: (n: number) => `${n} 🔥`,
+  },
+
+  map: {
+    title: 'מפת המדבר',
+    hello: (name: string) => `שלום ${name}! לאן הולכים היום?`,
+    locked: (lvl: string) => `רמה ${lvl}`,
+    lockedToast: (lvl: string) => `האזור הזה נפתח ברמה ${lvl}. ממשיכים לתרגל!`,
+  },
+
+  region: {
+    notFound: 'האזור לא נמצא',
+    locked: (lvl: string) => `האזור נעול עד רמה ${lvl}`,
+    soon: 'פעילויות חדשות בקרוב...',
+    template: {
+      dialogue: 'שיחה',
+      match: 'התאמת מילים',
+    },
+    pointsShort: (n: number) => `+${n}`,
+  },
+
+  activity: {
+    notFound: 'הפעילות לא נמצאה',
+    exit: 'יציאה',
+  },
+
+  dialogue: {
+    task: 'המשימה:',
+    you: 'אני',
+    listen: 'להשמיע שוב',
+    micStart: 'לחצו ודברו בעברית',
+    micStop: 'מקשיב... לחצו כשסיימתם',
+    micAgain: 'נסו שוב',
+    praise: ['מצוין! 👏', 'נהדר! הגייה ברורה 🌟', 'כל הכבוד! 💪', 'מעולה! 🎉'],
+    pointsCorrect: '+5 נקודות על דיבור',
+    almost: 'כמעט! נסו להגיד:',
+    pointsAttempt: '+2 על הניסיון',
+    tries: (left: number) => (left === 1 ? 'נשאר ניסיון אחד' : `נשארו ${left} ניסיונות`),
+    outOfTries: 'זה בסדר! בחרו תשובה מהאפשרויות וממשיכים.',
+    noSpeech: 'לא שמעתי כלום. התקרבו למיקרופון ונסו שוב.',
+    micBlocked: 'אין גישה למיקרופון. אשרו גישה בדפדפן, או בחרו תשובה מהאפשרויות.',
+    network:
+      'שירות זיהוי הדיבור לא עובד בדפדפן הזה. השתמשו ב-Google Chrome (לא Chromium) או ב-Chrome באנדרואיד, ובדקו חיבור לאינטרנט. בינתיים בחרו תשובה מהאפשרויות.',
+    unsupported: 'הדפדפן לא תומך בזיהוי דיבור. כדי לתרגל דיבור השתמשו ב-Chrome בטלפון אנדרואיד. בינתיים בחרו תשובה מהאפשרויות.',
+    needHelp: 'צריכים עזרה? הצגת אפשרויות',
+    helpCost: '(פחות נקודות)',
+    choose: 'בחרו את התשובה המתאימה:',
+    hint: (meaning: string) => `התשובה שלך אומרת: «${meaning}». זה מתאים? נסו תשובה אחרת 🙂`,
+    continue: 'המשך',
+    finish: 'סיום השיחה',
+  },
+
+  match: {
+    instructions: 'לחצו על מילה בעברית ואז על הפירוש שלה בערבית',
+    hebrew: 'עברית',
+    arabic: 'ערבית',
+    tryAgain: 'זה לא הזוג, נסו שוב',
+    allDone: 'יופי! התאמתם את כל המילים',
+    finish: 'סיום הפעילות',
+  },
+
+  done: {
+    titles: ['', 'כל הכבוד על הניסיון!', 'עבודה טובה מאוד!', 'מצוין! ביצוע מושלם!'],
+    earned: 'הנקודות שצברתם',
+    base: 'השלמת הפעילות',
+    bonus: 'בונוס 3 כוכבים',
+    help: 'שימוש באפשרויות',
+    spokenCorrect: 'משפטים שנאמרו נכון בקול',
+    spokenAttempts: 'ניסיונות דיבור',
+    total: 'סה״כ',
+    backToMap: 'חזרה למפה',
+    moreHere: 'עוד פעילויות באזור הזה',
+    retry: 'לעשות שוב',
+  },
+
+  profile: {
+    title: 'הפרופיל שלי',
+    classCode: (c: string) => `כיתה ${c}`,
+    level: 'רמה',
+    points: 'נקודות',
+    streak: 'ימים ברצף',
+    stars: 'כוכבים',
+    shop: 'חנות הדמות',
+    shopHint: 'פריטים נפתחים אוטומטית ככל שצוברים יותר נקודות',
+    unlockAt: (n: number) => `🔒 ${n} נקודות`,
+    equip: 'ללבוש',
+    equipped: 'בשימוש ✓',
+    changeAvatar: 'החלפת דמות',
+    logout: 'יציאה מהחשבון',
+    logoutConfirm: 'לצאת? ההתקדמות במכשיר הזה תימחק.',
+  },
+
+  bot: {
+    open: 'לשאול את המורה לעברית',
+    title: 'המורה לעברית',
+    placeholder: 'כתבו שאלה...',
+    send: 'שליחה',
+    voice: 'קול:',
+    male: 'גבר',
+    female: 'אישה',
+    close: 'סגירה',
+    listen: 'השמעה',
+    mic: 'לדבר עם המורה',
+    micStop: 'עצירה',
+    micLang: { he: 'עב', ar: 'عر' },
+    micLangLabel: 'שפת המיקרופון',
+    suggestions: ['שלום', 'كيف أقول خبز؟', 'ترجمة: תודה'],
+  },
+
+  teacher: {
+    title: 'לוח המורה',
+    subtitle: 'כיתת הדגמה — נתונים לדוגמה בלבד',
+    students: 'תלמידים',
+    avgMinutes: 'ממוצע דקות תרגול',
+    totalPoints: 'סך הנקודות',
+    cols: {
+      name: 'שם',
+      level: 'רמה',
+      points: 'נקודות',
+      lastActivity: 'פעילות אחרונה',
+      minutes: 'דקות השבוע',
+    },
+    hoursAgo: (h: number) =>
+      h < 1 ? 'לפני רגע' : h === 1 ? 'לפני שעה' : h === 2 ? 'לפני שעתיים' : h < 24 ? `לפני ${h} שעות` : h < 48 ? 'אתמול' : `לפני ${Math.round(h / 24)} ימים`,
+    needsNudge: 'צריך עידוד',
+    backToApp: 'לאפליקציית התלמיד',
+  },
+};
