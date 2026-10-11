@@ -147,6 +147,9 @@ export const ar = {
     equipped: 'مُرتدى ✓',
     changeAvatar: 'تغيير الشخصية',
     logout: 'تسجيل الخروج',
+    speechSpeed: 'سرعة الكلام بالعبرية',
+    speed: { slow: '🐢 بطيء', normal: 'عادي', fast: '🐇 سريع' },
+    speedHint: 'اضغط لتسمع مثالًا.',
     logoutConfirm: 'هل تريد الخروج؟ سيتم مسح التقدّم على هذا الجهاز.',
   },
 

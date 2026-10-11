@@ -126,6 +126,8 @@ export interface ShopItem {
 
 export type VoiceGender = 'male' | 'female';
 
+export type SpeechSpeed = 'slow' | 'normal' | 'fast';
+
 export interface Progress {
   name: string;
   classCode: string;
@@ -140,6 +142,7 @@ export interface Progress {
   lastVisit: string | null;
   equipped: Partial<Record<ItemSlot, string>>;
   voice: VoiceGender;
+  speechSpeed: SpeechSpeed;
 }
 
 export interface TutorCorrection {

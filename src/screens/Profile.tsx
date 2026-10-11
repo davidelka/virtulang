@@ -6,6 +6,9 @@ import { actions, useProgress } from '../store/useProgress';
 import { TopBar } from '../components/TopBar';
 import { AvatarView } from '../components/AvatarView';
 import { AddressChoice, AvatarPick } from './AvatarPick';
+import { setSpeechSpeed, speakHebrew } from '../lib/speech';
+
+const SPEED_SAMPLE = { female: 'שלום! ככה אני מדברת. זה מתאים לכם?', male: 'שלום! ככה אני מדבר. זה מתאים לכם?' };
 
 export function Profile() {
   const p = useProgress();
@@ -60,6 +63,32 @@ export function Profile() {
         </div>
 
         <AddressChoice value={p.addressAs} onChange={actions.setAddressAs} />
+
+        <fieldset className="address-choice">
+          <legend>
+            <Tx t={(d) => d.profile.speechSpeed} />
+          </legend>
+          <div className="address-options">
+            {(['slow', 'normal', 'fast'] as const).map((s) => (
+              <button
+                key={s}
+                type="button"
+                className={p.speechSpeed === s ? 'on' : ''}
+                aria-pressed={p.speechSpeed === s}
+                onClick={() => {
+                  actions.setSpeechSpeed(s);
+                  setSpeechSpeed(s); // apply before the preview plays
+                  speakHebrew(SPEED_SAMPLE[p.voice], p.voice);
+                }}
+              >
+                <Tx t={(d) => d.profile.speed[s]} />
+              </button>
+            ))}
+          </div>
+          <small className="muted">
+            <Tx t={(d) => d.profile.speedHint} />
+          </small>
+        </fieldset>
 
         <div className="profile-actions">
           <button className="btn btn-secondary" onClick={() => setPicking(true)}><Tx t={(d) => d.profile.changeAvatar} /></button>

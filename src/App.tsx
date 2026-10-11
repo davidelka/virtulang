@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { match, useLocation } from './router';
 import { actions, useProgress } from './store/useProgress';
+import { setSpeechSpeed } from './lib/speech';
 import { Login } from './screens/Login';
 import { AvatarPick } from './screens/AvatarPick';
 import { MapScreen } from './screens/MapScreen';
@@ -24,6 +25,8 @@ export default function App() {
   const loc = useLocation();
   const progress = useProgress();
   const loggedIn = !!progress.name;
+
+  useEffect(() => setSpeechSpeed(progress.speechSpeed), [progress.speechSpeed]);
 
   useEffect(() => {
     if (loggedIn) actions.checkStreak();

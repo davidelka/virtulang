@@ -1,4 +1,4 @@
-import type { VoiceGender } from '../types';
+import type { SpeechSpeed, VoiceGender } from '../types';
 
 // ---------- Text to speech ----------
 // First choice: the AI server's natural Hebrew voice (Gemini TTS, cached on the server).
@@ -16,8 +16,21 @@ let serverDownUntil = 0;
 let currentAudio: HTMLAudioElement | null = null;
 let speakId = 0; // a newer speakHebrew() or stopSpeaking() cancels the older one
 
-/** 1 = the voice's normal speed. Slower suits learners (browser voice; the server voice is slow by style). */
-export const SPEECH_RATE = 0.75;
+/**
+ * Speaking speed, chosen by the student. `audio` scales the server recordings (recorded in a slow,
+ * clear style) at playback, so changing it costs nothing; `browser` is the fallback voice's rate.
+ */
+const SPEEDS: Record<SpeechSpeed, { audio: number; browser: number }> = {
+  slow: { audio: 1, browser: 0.7 },
+  normal: { audio: 1.15, browser: 0.85 },
+  fast: { audio: 1.3, browser: 1 },
+};
+let speed: SpeechSpeed = 'normal';
+
+export function setSpeechSpeed(s: SpeechSpeed) {
+  speed = s;
+  if (currentAudio) currentAudio.playbackRate = SPEEDS[s].audio;
+}
 
 /** Speaks Hebrew text. Resolves when done, stopped, or if no voice is available. */
 export async function speakHebrew(text: string, gender: VoiceGender): Promise<void> {
@@ -49,6 +62,7 @@ async function playServerVoice(text: string, gender: VoiceGender, id: number): P
     if (id !== speakId) return 'cancelled';
     const src = URL.createObjectURL(blob);
     const audio = new Audio(src);
+    audio.playbackRate = SPEEDS[speed].audio; // pitch is preserved by default
     currentAudio = audio;
     try {
       await new Promise<void>((resolve, reject) => {
@@ -83,7 +97,7 @@ function browserSpeak(text: string, gender: VoiceGender): Promise<void> {
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'he-IL';
   u.voice = named ?? he[0] ?? null;
-  u.rate = SPEECH_RATE;
+  u.rate = SPEEDS[speed].browser;
   u.volume = 1; // the maximum the browser allows; beyond that it's the device volume
   // No voice of the right gender: shift the pitch of whatever Hebrew voice we have.
   if (!named) u.pitch = gender === 'male' ? 0.75 : 1.2;

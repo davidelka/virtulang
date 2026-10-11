@@ -144,6 +144,9 @@ export const he: typeof ar = {
     equipped: 'בשימוש ✓',
     changeAvatar: 'החלפת דמות',
     logout: 'יציאה מהחשבון',
+    speechSpeed: 'מהירות הדיבור בעברית',
+    speed: { slow: '🐢 לאט', normal: 'רגיל', fast: '🐇 מהר' },
+    speedHint: 'לחצו כדי לשמוע דוגמה.',
     logoutConfirm: 'לצאת? ההתקדמות במכשיר הזה תימחק.',
   },
 

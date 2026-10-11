@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import type { Activity, ActivityResult, ItemSlot, Progress, Reward, VoiceGender } from '../types';
+import type { Activity, ActivityResult, ItemSlot, Progress, Reward, SpeechSpeed, VoiceGender } from '../types';
 import { getShopItem } from '../lib/content';
 import { nextStreak, rewardFor, STREAK_POINTS, todayKey } from './scoring';
 
@@ -18,6 +18,7 @@ const initial: Progress = {
   lastVisit: null,
   equipped: {},
   voice: 'female',
+  speechSpeed: 'normal',
 };
 
 function load(): Progress {
@@ -94,6 +95,10 @@ export const actions = {
       else equipped[slot] = itemId;
       return { ...p, equipped };
     });
+  },
+
+  setSpeechSpeed(speechSpeed: SpeechSpeed) {
+    set((p) => ({ ...p, speechSpeed }));
   },
 
   setVoice(voice: VoiceGender) {
