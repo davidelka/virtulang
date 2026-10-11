@@ -50,6 +50,7 @@ export const ar = {
     template: {
       dialogue: 'حوار',
       match: 'مطابقة كلمات',
+      roleplay: 'لعبة أدوار',
     } satisfies Record<ActivityTemplate, string>,
     pointsShort: (n: number) => `+${n}`,
   },
@@ -85,6 +86,25 @@ export const ar = {
       `جوابك يعني: «${meaning}». هل هذا يناسب ما قيل؟ جرّب ردًّا آخر 🙂`,
     continue: 'متابعة',
     finish: 'إنهاء الحوار',
+  },
+
+  roleplay: {
+    yourLevel: 'المستوى:',
+    goals: 'عن ماذا تتكلّم:',
+    start: 'ابدأ الحديث 🎤',
+    tapToTalk: 'اضغط وتكلّم بالعبرية',
+    listening: 'أستمع... اضغط عند الانتهاء',
+    thinking: 'تفكّر...',
+    yourTurn: 'دورك! أجب بصوتك',
+    noSpeech: 'لم أسمع شيئًا. اضغط على الميكروفون وتكلّم.',
+    micBlocked: 'لا يمكن استخدام الميكروفون. اسمح للمتصفّح باستخدامه، أو اكتب.',
+    micUnavailable: 'التعرّف على الكلام لا يعمل في هذا المتصفّح. استخدم Google Chrome، أو اكتب.',
+    noMic: 'المتصفّح لا يدعم التكلّم. للتدرّب بالصوت استخدم Chrome على أندرويد. حاليًا اكتب أجوبتك.',
+    offline: 'نسخة بسيطة — المعلّم الذكي غير متصل',
+    placeholder: 'أو اكتب جوابك...',
+    send: 'إرسال',
+    finish: 'إنهاء اللعبة',
+    allDone: 'رائع! تكلّمت عن كل المواضيع 🎉',
   },
 
   match: {

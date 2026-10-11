@@ -49,6 +49,7 @@ export const he: typeof ar = {
     template: {
       dialogue: 'שיחה',
       match: 'התאמת מילים',
+      roleplay: 'משחק תפקידים',
     },
     pointsShort: (n: number) => `+${n}`,
   },
@@ -82,6 +83,25 @@ export const he: typeof ar = {
     hint: (meaning: string) => `התשובה שלך אומרת: «${meaning}». זה מתאים? נסו תשובה אחרת 🙂`,
     continue: 'המשך',
     finish: 'סיום השיחה',
+  },
+
+  roleplay: {
+    yourLevel: 'רמה:',
+    goals: 'על מה מדברים:',
+    start: 'מתחילים לדבר 🎤',
+    tapToTalk: 'לחצו ודברו בעברית',
+    listening: 'מקשיב... לחצו כשסיימתם',
+    thinking: 'חושבת...',
+    yourTurn: 'תורכם! ענו בקול',
+    noSpeech: 'לא שמעתי. לחצו על המיקרופון ודברו.',
+    micBlocked: 'אין גישה למיקרופון. אשרו גישה בדפדפן, או כתבו.',
+    micUnavailable: 'זיהוי דיבור לא עובד בדפדפן הזה. השתמשו ב-Google Chrome, או כתבו.',
+    noMic: 'הדפדפן לא תומך בדיבור. כדי לתרגל בקול השתמשו ב-Chrome באנדרואיד. בינתיים כתבו את התשובות.',
+    offline: 'גרסה פשוטה — המורה החכם לא מחובר',
+    placeholder: 'או כתבו את התשובה...',
+    send: 'שליחה',
+    finish: 'סיום המשחק',
+    allDone: 'מעולה! דיברתם על כל הנושאים 🎉',
   },
 
   match: {

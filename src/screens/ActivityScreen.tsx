@@ -40,7 +40,7 @@ export function ActivityScreen({ id }: { id: string }) {
         <span className="level-badge">{activity.level}</span>
       </header>
       <main className="activity-body">
-        <Template content={activity.content} onComplete={complete} />
+        <Template activityId={activity.id} content={activity.content} onComplete={complete} />
       </main>
     </div>
   );

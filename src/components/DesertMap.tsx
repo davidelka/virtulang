@@ -56,7 +56,7 @@ export function DesertMap({ progress, onRegion }: Props) {
       </g>
       <g fontSize="22" opacity="0.85">
         <text x="352" y="70">☀️</text>
-        <text x="20" y="560">🌵</text>
+        <text x="200" y="560">🌵</text>
         <text x="345" y="520">🌴</text>
         <text x="170" y="380">🪨</text>
       </g>

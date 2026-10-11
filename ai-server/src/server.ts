@@ -1,7 +1,8 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { TEST_PAGE } from './page';
 import { getProvider, modelName, providerErrorStatus } from './provider';
-import { TutorRequest } from './schema';
+import { RoleplayRequest, TutorRequest } from './schema';
+import { UnknownActivityError, roleplayReply } from './roleplay';
 import { tutorReply } from './tutor';
 
 const MAX_BODY = 20_000;
@@ -74,9 +75,19 @@ export function createTutorServer(allowedOrigin = process.env.ALLOWED_ORIGIN ?? 
         send(res, 200, await tutorReply(parsed.data));
         return;
       }
+      if (req.method === 'POST' && req.url === '/api/roleplay') {
+        const parsed = RoleplayRequest.safeParse(await readJson(req));
+        if (!parsed.success) {
+          send(res, 400, { error: ERRORS.badRequest, issues: parsed.error.issues.map((i) => i.message) });
+          return;
+        }
+        send(res, 200, await roleplayReply(parsed.data));
+        return;
+      }
       send(res, 404, { error: ERRORS.notFound });
     } catch (err) {
       if (err instanceof HttpError) return send(res, err.status, err.body);
+      if (err instanceof UnknownActivityError) return send(res, 404, { error: ERRORS.notFound });
       const status = providerErrorStatus(err);
       if (status) {
         const apiStatus = (err as { status?: number }).status;

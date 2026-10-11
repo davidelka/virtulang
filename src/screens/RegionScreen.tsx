@@ -8,7 +8,7 @@ import { TopBar } from '../components/TopBar';
 import { Stars } from '../components/Stars';
 import type { ActivityTemplate } from '../types';
 
-const TEMPLATE_ICON: Record<ActivityTemplate, string> = { dialogue: '💬', match: '🧩' };
+const TEMPLATE_ICON: Record<ActivityTemplate, string> = { dialogue: '💬', match: '🧩', roleplay: '🎭' };
 
 export function RegionScreen({ id }: { id: string }) {
   const progress = useProgress();

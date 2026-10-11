@@ -21,7 +21,7 @@ export interface PointOfInterest {
   activityIds: string[];
 }
 
-export type ActivityTemplate = 'dialogue' | 'match';
+export type ActivityTemplate = 'dialogue' | 'match' | 'roleplay';
 
 export interface Activity {
   id: string;
@@ -31,7 +31,7 @@ export interface Activity {
   titleAr: string;
   titleHe: string;
   points: number;
-  content: DialogueContent | MatchContent;
+  content: DialogueContent | MatchContent | RoleplayContent;
   status: 'approved';
   createdBy: 'team';
 }
@@ -56,6 +56,33 @@ export interface DialogueTurn {
 export interface DialogueContent {
   speakerGender?: VoiceGender;
   turns: DialogueTurn[];
+}
+
+/** One thing the student should talk about in a role-play. */
+export interface RoleplayGoal {
+  id: string;
+  labelAr: string; // checklist label
+  labelHe: string;
+  askHe: string; // how the character asks about it (used by the scripted fallback)
+  askAr: string;
+}
+
+export interface RoleplayContent {
+  character: {
+    nameHe: string;
+    nameAr: string;
+    emoji: string;
+    gender: VoiceGender;
+    roleHe: string; // who the character is, for the AI
+  };
+  scenarioAr: string;
+  scenarioHe: string;
+  greetingHe: string;
+  greetingAr: string;
+  closingHe: string;
+  closingAr: string;
+  /** Goals per level; the student gets the set for their level (or the closest lower one). */
+  levels: Partial<Record<CEFR, RoleplayGoal[]>>;
 }
 
 export interface MatchContent {

@@ -5,5 +5,6 @@
   { "id": "interview", "regionId": "daily", "nameAr": "مقابلة عمل", "nameHe": "ראיון עבודה", "x": 350, "y": 255, "activityIds": ["job-interview"] },
   { "id": "phone", "regionId": "daily", "nameAr": "مكالمة هاتفية", "nameHe": "שיחת טלפון", "x": 350, "y": 410, "activityIds": ["phone-call"] },
   { "id": "well", "regionId": "games", "nameAr": "بئر الكلمات", "nameHe": "באר המילים", "x": 42, "y": 410, "activityIds": ["daily-words", "time-words"] },
+  { "id": "stage", "regionId": "games", "nameAr": "مسرح الأدوار", "nameHe": "במת התפקידים", "x": 62, "y": 572, "activityIds": ["intro-roleplay"] },
   { "id": "civics", "regionId": "knowledge", "nameAr": "ركن المعرفة", "nameHe": "פינת הידע", "x": 195, "y": 655, "activityIds": ["civics-words"] }
 ]

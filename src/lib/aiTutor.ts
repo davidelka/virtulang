@@ -32,3 +32,34 @@ export async function askTutor(level: CEFR, messages: TutorTurn[]): Promise<Tuto
     return null;
   }
 }
+
+export interface RoleplayServerTurn {
+  he: string;
+  ar: string;
+  correction: TutorCorrection | null;
+  goalsMet: string[];
+  finished: boolean;
+  level: CEFR;
+  source: TutorReply['source'];
+}
+
+/** One role-play turn from the AI server; null when it's unreachable (the game then runs scripted). */
+export async function askRoleplay(
+  activityId: string,
+  level: CEFR,
+  met: string[],
+  messages: TutorTurn[],
+): Promise<RoleplayServerTurn | null> {
+  try {
+    const res = await fetch(`${BASE}/api/roleplay`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ activityId, level, met, messages }),
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as RoleplayServerTurn;
+  } catch {
+    return null;
+  }
+}

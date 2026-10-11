@@ -4,9 +4,9 @@ import type { AddressInfo } from 'node:net';
 import { after, before, describe, test } from 'node:test';
 import { TutorRequest, TutorReply } from '../src/schema';
 import { createTutorServer } from '../src/server';
-import { REPLY_JSON_SCHEMA } from '../src/gemini';
-import { getProvider } from '../src/provider';
-import { START_SIGNAL, scriptsLookRight, trimHistory, tutorReply } from '../src/tutor';
+import { REPLY_JSON_SCHEMA } from '../src/schema';
+import { getProvider, scriptsLookRight } from '../src/provider';
+import { START_SIGNAL, trimHistory, tutorReply } from '../src/tutor';
 
 const ask = (text: string) => tutorReply({ level: 'A2', messages: [{ role: 'student', text }] });
 
@@ -180,5 +180,17 @@ describe('HTTP server', () => {
 
   test('unknown route → 404', async () => {
     assert.equal((await fetch(`${base}/nope`)).status, 404);
+  });
+});
+
+describe('correction clean-up', async () => {
+  const { dropNoopCorrection } = await import('../src/provider');
+  test('drops a correction that changes nothing', () => {
+    const r = { he: 'x', ar: 'y', correction: { said: 'אני בן שש עשרה', better: 'אני בן שש עשרה.', noteAr: 'صحيح' } };
+    assert.equal(dropNoopCorrection(r).correction, null);
+  });
+  test('keeps a real correction', () => {
+    const r = { he: 'x', ar: 'y', correction: { said: 'אני גרים ברהט', better: 'אני גר ברהט', noteAr: '…' } };
+    assert.ok(dropNoopCorrection(r).correction);
   });
 });
