@@ -14,6 +14,9 @@ if (canSpeak) {
 // Voice names rarely state gender; these cover common Hebrew voices (Carmit, Asaf, ...).
 const NAME_HINT: Record<VoiceGender, RegExp> = { female: /carmit|female|woman/i, male: /asaf|\bmale|\bman\b/i };
 
+/** 1 = the voice's normal speed. Slower suits learners. */
+export const SPEECH_RATE = 0.75;
+
 /** Speaks Hebrew text. Resolves when done (or immediately if TTS is unavailable). */
 export function speakHebrew(text: string, gender: VoiceGender): Promise<void> {
   if (!canSpeak) return Promise.resolve();
@@ -22,7 +25,8 @@ export function speakHebrew(text: string, gender: VoiceGender): Promise<void> {
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'he-IL';
   u.voice = named ?? he[0] ?? null;
-  u.rate = 0.9;
+  u.rate = SPEECH_RATE;
+  u.volume = 1; // the maximum the browser allows; beyond that it's the device volume
   // No voice of the right gender: shift the pitch of whatever Hebrew voice we have.
   if (!named) u.pitch = gender === 'male' ? 0.75 : 1.2;
   return new Promise((resolve) => {
